@@ -56,3 +56,8 @@ openssl x509 -in meudominio.com.br.crt -text -noout
 ```
 openssl pkcs12 -export -out meudominio.com.br.pfx -inkey meudominio.com.br.key -in meudominio.com.br.crt
 ```
+Ou se quiser adicionar cadeias intermediárias pode adicionar usando o seguinte comando
+
+```
+openssl pkcs12 -export -out meudominio.com.br.pfx -inkey meudominio.com.br.key -in meudominio.com.br.crt -certfile cert.intermediario.crt
+```
