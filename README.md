@@ -1,63 +1,62 @@
-# certificados
-Criar um certificado com raíz via openssl
+# Digital Certificates
+To Create a certificate with root by openssl
 
-## Primeiro passo é criar um certificado raíz
+## First step is to create a root certificate
 
-Para gerar o seu certificado raíz, primeiro abra o seu terminal de preferência e execute o seguinte comando openssl;
+To generate your root certificate, first open your preferred shell terminal and run the following openssl command;
 
 ```bash
 openssl genrsa -des3 -out rootCA.key 4096
 ```
 
-## Segundo passo é criar o certificado raíz assinado
+## Second step is to create the signed root certificate
 
 ```bash
 openssl req -x509 -new -nodes -key rootCA.key -sha256 -days 9125 -out rootCA.crt
 ```
 
-Esse certificado .crt gerado é o certificado que você irá instalar no seu servidor como certificado raíz confiável
+This generated .crt certificate is the certificate that you'll install on your server as a trusted root certificate.
 
-# Certificado de domínio
+# Domain certificate
 
-## Terceiro passo é criar o certificado para o seu domínio
-
-```
-openssl genrsa -out meudominio.com.br.key 2048
-```
-
-## Quarto passo é criar o certificado assinado  (csr)
-
-**Importante:** O common Name deve ser diferente do gerado no certificado raíz, nesse caso o ideal é colocar o domínio como common name.
+## Third step is to create the certificate for your domain
 
 ```
-openssl req -new -key meudominio.com.br.key -out meudominio.com.br.csr
+openssl genrsa -out mydomain.com.key 2048
 ```
 
-## Verificar o conteúdo do arquivo csr's.
+## Fourth step is to create the signed certificate  (csr)
+
+**Importante:** The common Name must be different from the one generated in the root certificate, in this case the ideal is to put the domain as common name.
 
 ```
-openssl req -in meudominio.com.br.csr -noout -text
+openssl req -new -key mydomain.com.key -out mydomain.com.csr
 ```
 
-## Gerar o certificado usando o `meudominio.com.br` csr com a chave privada da raíz
+## Check the contents of the csr's file.
 
 ```
-openssl x509 -req -in meudominio.com.br.csr -CA rootCA.crt -CAkey rootCA.key -CAcreateserial -out meudominio.com.br.crt -days 9125 -sha256
+openssl req -in mydomain.com.csr -noout -text
 ```
 
-## Verificar o conteúdo do certificado
+## Generate the certificate using `mydomain.com.br` csr with the root private key
 
 ```
-openssl x509 -in meudominio.com.br.crt -text -noout
+openssl x509 -req -in mydomain.com.csr -CA rootCA.crt -CAkey rootCA.key -CAcreateserial -out mydomain.com.crt -days 9125 -sha256
 ```
 
-## Gerar o pfx do certificado
+## Check the content of the certificate
 
 ```
-openssl pkcs12 -export -out meudominio.com.br.pfx -inkey meudominio.com.br.key -in meudominio.com.br.crt
+openssl x509 -in mydomain.com.crt -text -noout
 ```
-Ou se quiser adicionar cadeias intermediárias pode adicionar usando o seguinte comando
+
+## Generate the certificate pfx
 
 ```
-openssl pkcs12 -export -out meudominio.com.br.pfx -inkey meudominio.com.br.key -in meudominio.com.br.crt -certfile cert.intermediario.crt
+openssl pkcs12 -export -out mydomain.com.pfx -inkey mydomain.com.key -in mydomain.com.crt
+```
+Or if you want to add intermediate strings you can add using the following command
+```
+openssl pkcs12 -export -out mydomain.com.pfx -inkey mydomain.com.key -in mydomain.com.crt -certfile cert.intermediate.crt
 ```
